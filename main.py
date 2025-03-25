@@ -444,6 +444,45 @@ def display_image_from_base64(base64_string, caption=""):
     if base64_string:
         st.image(f"data:image/png;base64,{base64_string}", caption=caption, use_column_width=True)
 
+def process_chat_message(question):
+    """Process a chat message and generate a response"""
+    # Add user message to history
+    st.session_state.chat_history.append({"role": "user", "content": question})
+    
+    try:
+        # Show a loading message while processing
+        with st.spinner("Generating answer..."):
+            # Generate response using LLM
+            answer = llm_inference.answer_dataset_question(question, st.session_state.dataset_info)
+            
+            # Add AI response to history
+            st.session_state.chat_history.append({"role": "ai", "content": answer})
+    except Exception as e:
+        # Handle errors gracefully
+        error_message = str(e)
+        
+        # Create a friendly error message
+        error_response = f"""
+        I apologize, but I encountered an error while trying to answer your question.
+        
+        This might be due to:
+        - API usage limitations
+        - Connection issues
+        - Processing complex queries
+        
+        You can try:
+        - Rephrasing your question
+        - Asking a different question
+        - Checking the Overview tab for basic insights about your data
+        
+        Error details: {error_message}
+        """
+        
+        # Add error response to chat history
+        st.session_state.chat_history.append({"role": "ai", "content": error_response})
+    
+    return
+
 def main():
     """Main application function"""
     # Header
@@ -925,46 +964,217 @@ def main():
         elif st.session_state.active_tab == "chat":
             st.markdown('<p class="section-header">Chat with Your Data</p>', unsafe_allow_html=True)
             
-            st.markdown("""
-            Ask questions about your dataset and get AI-powered answers based on the analysis.
-            Examples:
-            - What are the key patterns in this dataset?
-            - Which columns have the most missing values?
-            - What kind of feature engineering would be useful for this data?
-            - How are the numerical variables distributed?
-            """)
-            
-            # Chat interface
-            st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-            
-            # Initialize chat history if not exists
+            # Initialize chat history if it doesn't exist
             if "chat_history" not in st.session_state:
                 st.session_state.chat_history = []
             
+            if "show_predefined_questions" not in st.session_state:
+                st.session_state.show_predefined_questions = True
+                
+            # Display intro message only if no chat history
+            if not st.session_state.chat_history:
+                st.markdown("""
+                Ask questions about your dataset and get AI-powered answers based on the analysis.
+                """)
+            
+            # Create a clean chat interface
+            st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+            
             # Display chat history
-            for entry in st.session_state.chat_history:
+            for i, entry in enumerate(st.session_state.chat_history):
                 if entry["role"] == "user":
                     st.markdown(f'<div class="chat-message user-message">{entry["content"]}</div>', unsafe_allow_html=True)
                 else:  # AI
                     st.markdown(f'<div class="chat-message ai-message">{entry["content"]}</div>', unsafe_allow_html=True)
             
-            # Chat input
-            user_question = st.text_input("Ask a question about your dataset:", key="chat_input")
+            # Suggested questions section
+            if st.session_state.show_predefined_questions and not st.session_state.chat_history:
+                suggested_questions = [
+                    "What are the key patterns in this dataset?",
+                    "Which columns have the most missing values?",
+                    "What kind of feature engineering would be useful for this data?",
+                    "How are the numerical variables distributed?",
+                    "What insights can you provide about correlations in this dataset?",
+                    "How can I prepare this data for machine learning models?"
+                ]
+                
+                st.markdown('<div class="suggested-questions-container">', unsafe_allow_html=True)
+                st.markdown("### Try asking...", unsafe_allow_html=True)
+                
+                # Display suggested questions in a grid
+                cols = st.columns(2)
+                for i, question in enumerate(suggested_questions):
+                    with cols[i % 2]:
+                        if st.button(question, key=f"suggested_q_{i}"):
+                            # When clicked, add to chat history and process
+                            process_chat_message(question)
+                            # Hide suggested questions once one is selected
+                            st.session_state.show_predefined_questions = False
+                            st.experimental_rerun()
+                
+                st.markdown('</div>', unsafe_allow_html=True)
             
-            if user_question and st.button("Send", key="send_chat"):
-                # Add user message to history
-                st.session_state.chat_history.append({"role": "user", "content": user_question})
-                
-                with st.spinner("Generating answer..."):
-                    answer = llm_inference.answer_dataset_question(user_question, st.session_state.dataset_info)
-                    
-                    # Add AI response to history
-                    st.session_state.chat_history.append({"role": "ai", "content": answer})
-                
+            # Chat input
+            st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
+            
+            # Create custom layout for chat input and send button
+            chat_cols = st.columns([6, 1])
+            
+            with chat_cols[0]:
+                user_question = st.text_input(
+                    "Ask a question about your dataset:", 
+                    key="chat_input",
+                    label_visibility="collapsed",
+                    placeholder="Type your question here...")
+            
+            with chat_cols[1]:
+                send_pressed = st.button("↗", key="send_chat", use_container_width=True)
+            
+            st.markdown('</div>', unsafe_allow_html=True)
+            
+            if send_pressed and user_question:
+                # Process the user message
+                process_chat_message(user_question)
                 # Rerun to update the chat display
                 st.experimental_rerun()
             
             st.markdown('</div>', unsafe_allow_html=True)
+            
+            # Add CSS for chat styling
+            st.markdown("""
+            <style>
+                /* Chat container styling */
+                .chat-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    margin-top: 20px;
+                    padding-bottom: 80px; /* Space for input box */
+                }
+                
+                /* Chat message styling */
+                .chat-message {
+                    max-width: 80%;
+                    padding: 12px 16px;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 5px var(--shadow);
+                    margin-bottom: 10px;
+                    white-space: pre-wrap;
+                }
+                
+                .user-message {
+                    align-self: flex-end;
+                    background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+                    color: white;
+                    border-bottom-right-radius: 2px;
+                    margin-left: auto;
+                }
+                
+                .ai-message {
+                    align-self: flex-start;
+                    background-color: var(--bg-card);
+                    border-bottom-left-radius: 2px;
+                    border-left: 3px solid var(--secondary);
+                    color: var(--text-light);
+                    margin-right: auto;
+                }
+                
+                /* Suggested questions styling */
+                .suggested-questions-container {
+                    background-color: var(--bg-card);
+                    border-radius: 12px;
+                    padding: 16px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 2px 5px var(--shadow);
+                }
+                
+                .suggested-questions-container h3 {
+                    margin-top: 0;
+                    margin-bottom: 15px;
+                    color: var(--text-light);
+                    font-size: 1.2rem;
+                }
+                
+                /* Style for the suggested question buttons */
+                .suggested-questions-container [data-testid="baseButton-secondary"] {
+                    background-color: rgba(99, 102, 241, 0.1) !important;
+                    border: 1px solid var(--primary) !important;
+                    color: var(--text-light) !important;
+                    padding: 8px 12px !important;
+                    border-radius: 8px !important;
+                    text-align: left !important;
+                    white-space: normal !important;
+                    height: 80px !important; /* Fixed height for all buttons */
+                    margin-bottom: 10px !important;
+                    font-size: 0.9rem !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: flex-start !important;
+                    transition: all 0.2s !important;
+                    box-shadow: none !important;
+                    overflow: hidden !important;
+                }
+                
+                .suggested-questions-container [data-testid="baseButton-secondary"]:hover {
+                    background-color: rgba(99, 102, 241, 0.2) !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                }
+                
+                /* Chat input container styling */
+                .chat-input-container {
+                    position: fixed;
+                    bottom: 20px;
+                    left: 30%;
+                    right: 5%;
+                    background-color: var(--bg-dark);
+                    padding: 16px;
+                    border-radius: 12px;
+                    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+                    display: flex;
+                    z-index: 1000;
+                }
+                
+                /* Input field styling */
+                .chat-input-container [data-testid="stTextInput"] {
+                    background-color: var(--bg-card);
+                    border-radius: 8px;
+                    border: 1px solid var(--border-dark);
+                }
+                
+                /* Send button styling - arrow icon */
+                .chat-input-container [data-testid="baseButton-secondary"] {
+                    background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%) !important;
+                    color: white !important;
+                    border: none !important;
+                    border-radius: 50% !important; /* Make it circular */
+                    width: 38px !important; /* Match height of text input */
+                    height: 38px !important; /* Match height of text input */
+                    min-width: 38px !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    transition: all 0.2s !important;
+                    padding: 0 !important;
+                    margin-left: 10px !important;
+                    margin-top: 0 !important; /* Align with input field */
+                    font-size: 1.2rem !important;
+                    cursor: pointer !important;
+                    align-self: center !important; /* Center vertically */
+                }
+                
+                .chat-input-container [data-testid="baseButton-secondary"]:hover {
+                    transform: translateY(-2px) scale(1.05);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                }
+                
+                /* Fix the column layout for suggested questions */
+                .suggested-questions-container [data-testid="column"] {
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+            </style>
+            """, unsafe_allow_html=True)
     else:
         # Display welcome message when no dataset is loaded
         st.markdown('<div class="card">', unsafe_allow_html=True)
