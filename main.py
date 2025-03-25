@@ -422,6 +422,25 @@ st.markdown("""
     .stImage img + div {
         color: var(--text-muted) !important;
     }
+    
+    /* Make buttons look better */
+    button[kind="secondary"] {
+        font-size: 1rem;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+        min-height: 40px;
+    }
+    
+    /* Add emoji size */
+    button[kind="secondary"]::before {
+        content: attr(data-emoji);
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -613,6 +632,8 @@ def main():
                 padding: 10px 0;
                 font-weight: bold;
                 border: none;
+                height: 40px !important; /* Set tab button height to 40px */
+                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "overview" else "")}
             }}
             
@@ -622,6 +643,8 @@ def main():
                 padding: 10px 0;
                 font-weight: bold;
                 border: none;
+                height: 40px !important; /* Set tab button height to 40px */
+                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "eda" else "")}
             }}
             
@@ -631,6 +654,8 @@ def main():
                 padding: 10px 0;
                 font-weight: bold;
                 border: none;
+                height: 40px !important; /* Set tab button height to 40px */
+                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "feature_engineering" else "")}
             }}
             
@@ -640,6 +665,8 @@ def main():
                 padding: 10px 0;
                 font-weight: bold;
                 border: none;
+                height: 40px !important; /* Set tab button height to 40px */
+                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "data_quality" else "")}
             }}
             
@@ -649,18 +676,19 @@ def main():
                 padding: 10px 0;
                 font-weight: bold;
                 border: none;
+                height: 40px !important; /* Set tab button height to 40px */
+                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "chat" else "")}
             }}
             
-            /* Make buttons look better */
-            button[kind="secondary"] {{
+            /* General button styling */
+            div[data-testid="stHorizontalBlock"] button[kind="secondary"] {{
                 font-size: 1rem;
                 padding: 0.5rem;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                height: 80px;
             }}
             
             /* Add emoji size */
@@ -1148,9 +1176,10 @@ def main():
                     color: white !important;
                     border: none !important;
                     border-radius: 50% !important; /* Make it circular */
-                    width: 38px !important; /* Match height of text input */
-                    height: 38px !important; /* Match height of text input */
-                    min-width: 38px !important;
+                    width: 36px !important; /* Smaller size */
+                    height: 36px !important; /* Smaller size */
+                    min-width: 36px !important;
+                    min-height: 36px !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
@@ -1163,9 +1192,28 @@ def main():
                     align-self: center !important; /* Center vertically */
                 }
                 
+                /* Override Streamlit's default button styling specifically for the send button */
+                .chat-input-container button[kind="secondary"] {
+                    height: 36px !important;
+                    min-height: 36px !important;
+                    flex-direction: row !important;
+                }
+                
                 .chat-input-container [data-testid="baseButton-secondary"]:hover {
                     transform: translateY(-2px) scale(1.05);
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+                }
+                
+                /* Preserve the height for suggested question buttons only */
+                .suggested-questions-container button[kind="secondary"] {
+                    font-size: 1rem !important;
+                    padding: 0.5rem !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    height: 80px !important;
+                    min-height: 80px !important;
                 }
                 
                 /* Fix the column layout for suggested questions */
