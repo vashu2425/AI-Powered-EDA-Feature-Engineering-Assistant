@@ -425,21 +425,23 @@ st.markdown("""
     
     /* Make buttons look better */
     button[kind="secondary"] {
-        font-size: 1rem;
-        padding: 0.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 40px;
-        min-height: 40px;
+        font-size: 0.9rem !important;
+        padding: 0.5rem !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        transition: all 0.2s !important;
     }
     
     /* Add emoji size */
     button[kind="secondary"]::before {
         content: attr(data-emoji);
-        font-size: 1.5rem;
-        margin-bottom: 0.25rem;
+        font-size: 1.3rem !important;
+        margin-bottom: 0.1rem !important;
+        line-height: 1 !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -626,64 +628,45 @@ def main():
         highlight_css = f"""
         <style>
             /* Override button styles with custom styling for tabs */
-            div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {{
-                background: {tab_styles["overview"] if st.session_state.active_tab == "overview" else "var(--bg-card)"};
+            div[data-testid="stHorizontalBlock"] > div button {{
+                background-color: var(--bg-card);
                 border-radius: 10px;
                 padding: 10px 0;
                 font-weight: bold;
                 border: none;
-                height: 40px !important; /* Set tab button height to 40px */
+                height: 50px !important; /* Set tab button height to 40px */
                 min-height: 40px !important;
+                transition: all 0.2s;
+            }}
+            
+            div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {{
+                background: {tab_styles["overview"] if st.session_state.active_tab == "overview" else "var(--bg-card)"};
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "overview" else "")}
             }}
             
             div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {{
                 background: {tab_styles["eda"] if st.session_state.active_tab == "eda" else "var(--bg-card)"};
-                border-radius: 10px;
-                padding: 10px 0;
-                font-weight: bold;
-                border: none;
-                height: 40px !important; /* Set tab button height to 40px */
-                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "eda" else "")}
             }}
             
             div[data-testid="stHorizontalBlock"] > div:nth-child(3) button {{
                 background: {tab_styles["feature_engineering"] if st.session_state.active_tab == "feature_engineering" else "var(--bg-card)"};
-                border-radius: 10px;
-                padding: 10px 0;
-                font-weight: bold;
-                border: none;
-                height: 40px !important; /* Set tab button height to 40px */
-                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "feature_engineering" else "")}
             }}
             
             div[data-testid="stHorizontalBlock"] > div:nth-child(4) button {{
                 background: {tab_styles["data_quality"] if st.session_state.active_tab == "data_quality" else "var(--bg-card)"};
-                border-radius: 10px;
-                padding: 10px 0;
-                font-weight: bold;
-                border: none;
-                height: 40px !important; /* Set tab button height to 40px */
-                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "data_quality" else "")}
             }}
             
             div[data-testid="stHorizontalBlock"] > div:nth-child(5) button {{
                 background: {tab_styles["chat"] if st.session_state.active_tab == "chat" else "var(--bg-card)"};
-                border-radius: 10px;
-                padding: 10px 0;
-                font-weight: bold;
-                border: none;
-                height: 40px !important; /* Set tab button height to 40px */
-                min-height: 40px !important;
                 {("box-shadow: 0 8px 15px rgba(0,0,0,0.2); transform: translateY(-3px);" if st.session_state.active_tab == "chat" else "")}
             }}
             
             /* General button styling */
             div[data-testid="stHorizontalBlock"] button[kind="secondary"] {{
-                font-size: 1rem;
+                font-size: 0.9rem;
                 padding: 0.5rem;
                 display: flex;
                 flex-direction: column;
@@ -694,8 +677,8 @@ def main():
             /* Add emoji size */
             button[kind="secondary"]::before {{
                 content: attr(data-emoji);
-                font-size: 1.5rem;
-                margin-bottom: 0.25rem;
+                font-size: 1.3rem;
+                margin-bottom: 0.1rem;
             }}
         </style>
         """
@@ -1132,7 +1115,7 @@ def main():
                     border-radius: 8px !important;
                     text-align: left !important;
                     white-space: normal !important;
-                    height: 80px !important; /* Fixed height for all buttons */
+                    height: 60px !important; /* Reduced from 80px to 60px */
                     margin-bottom: 10px !important;
                     font-size: 0.9rem !important;
                     display: flex !important;
@@ -1156,7 +1139,7 @@ def main():
                     left: 30%;
                     right: 5%;
                     background-color: var(--bg-dark);
-                    padding: 16px;
+                    padding: 12px; /* Reduced from 16px */
                     border-radius: 12px;
                     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
                     display: flex;
@@ -1170,16 +1153,22 @@ def main():
                     border: 1px solid var(--border-dark);
                 }
                 
+                .chat-input-container [data-testid="stTextInput"] input {
+                    height: 36px !important;
+                    min-height: 36px !important;
+                    padding: 8px 12px !important;
+                }
+                
                 /* Send button styling - arrow icon */
                 .chat-input-container [data-testid="baseButton-secondary"] {
                     background: linear-gradient(90deg, var(--secondary) 0%, var(--primary) 100%) !important;
                     color: white !important;
                     border: none !important;
                     border-radius: 50% !important; /* Make it circular */
-                    width: 36px !important; /* Smaller size */
-                    height: 36px !important; /* Smaller size */
-                    min-width: 36px !important;
-                    min-height: 36px !important;
+                    width: 34px !important; /* Smaller size */
+                    height: 34px !important; /* Smaller size */
+                    min-width: 34px !important;
+                    min-height: 34px !important;
                     display: flex !important;
                     align-items: center !important;
                     justify-content: center !important;
@@ -1194,26 +1183,15 @@ def main():
                 
                 /* Override Streamlit's default button styling specifically for the send button */
                 .chat-input-container button[kind="secondary"] {
-                    height: 36px !important;
-                    min-height: 36px !important;
+                    height: 34px !important;
+                    min-height: 34px !important;
                     flex-direction: row !important;
+                    box-shadow: none !important;
                 }
                 
                 .chat-input-container [data-testid="baseButton-secondary"]:hover {
                     transform: translateY(-2px) scale(1.05);
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-                }
-                
-                /* Preserve the height for suggested question buttons only */
-                .suggested-questions-container button[kind="secondary"] {
-                    font-size: 1rem !important;
-                    padding: 0.5rem !important;
-                    display: flex !important;
-                    flex-direction: column !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    height: 80px !important;
-                    min-height: 80px !important;
                 }
                 
                 /* Fix the column layout for suggested questions */
