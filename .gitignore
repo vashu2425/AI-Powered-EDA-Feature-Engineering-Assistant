@@ -47,6 +47,10 @@ ai_eda_env/
 
 # VS Code
 .vscode/
+.alcache/
+.alpackages/
+.snapshots/
+.output/
 
 # PyCharm
 .idea/
@@ -58,4 +62,11 @@ ai_eda_env/
 data/
 *.csv
 *.xlsx
-*.xls 
+*.xls
+
+# AL specific
+*.app
+rad.json
+*.g.xlf
+*.flf
+TestResults.xml
