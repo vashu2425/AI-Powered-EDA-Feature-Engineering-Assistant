@@ -29,15 +29,15 @@ Here's a quick look at what you can do:
 
 - **Frontend**: Streamlit
 - **Data Processing**: Pandas, NumPy, Matplotlib, Seaborn
-- **AI Integration**: LangChain + Hugging Face API
-- **LLM Model**: Mistral-7B-Instruct-v0.3
+- **AI Integration**: LangChain + Groq API
+- **LLM Model**: Llama3-8b-8192
 
 ## 📦 Installation
 
 ### Prerequisites
 - Python 3.8+
 - Anaconda or Miniconda (recommended)
-- Hugging Face API key
+- Groq API key
 
 ### Setup
 
@@ -58,9 +58,36 @@ conda activate ai_eda_env
 pip install -r requirements.txt
 ```
 
-4. Create a `.env` file with your Hugging Face API key:
+4. Create a `.env` file with your Groq API key:
 ```
-HF_TOKEN=your_huggingface_token_here
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+### ⚠️ Compatibility Note
+
+This application requires specific versions of NumPy (1.24.3) and pandas (1.5.3) to avoid binary compatibility issues. The requirements.txt file has been updated with these specific versions to ensure a smooth installation experience.
+
+### 🔧 Troubleshooting
+
+If you encounter the following error:
+```
+ValueError: numpy.dtype size changed, may indicate binary incompatibility. Expected 96 from C header, got 88 from PyObject
+```
+
+Try the following solutions:
+
+1. Make sure you're using the exact versions specified in requirements.txt:
+```bash
+pip install numpy==1.24.3 pandas==1.5.3
+```
+
+2. If you're using Streamlit version older than 1.11.0, you might need to update the code to replace `st.experimental_rerun()` with `st.rerun()`.
+
+3. If you're still having issues, try creating a fresh conda environment with Python 3.10:
+```bash
+conda create -n fresh_ai_eda_env python=3.10
+conda activate fresh_ai_eda_env
+pip install -r requirements.txt
 ```
 
 ## 🚀 Usage

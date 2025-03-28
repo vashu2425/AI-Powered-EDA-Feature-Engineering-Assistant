@@ -1,0 +1,21 @@
+
+  You can now view your Streamlit app in your browser.
+
+  Local URL: http://localhost:8502
+  Network URL: http://192.168.4.242:8502
+
+2025-03-27 17:35:23,084 - llm_inference - INFO - Successfully initialized Groq client
+2025-03-27 17:35:23,180 - llm_inference - INFO - LLMInference initialized with model: llama3-8b-8192
+2025-03-27 17:35:23,181 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:23,187 - __main__ - INFO - Generating AI insights at end of main function
+2025-03-27 17:35:23,187 - __main__ - WARNING - Cannot generate AI insights: No dataframe in session state
+2025-03-27 17:35:23,187 - __main__ - INFO - Generated insights: 0 categories
+2025-03-27 17:35:23,245 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:28,359 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:30,094 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:32,680 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:32,756 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:34,046 - __main__ - INFO - Session state initialized
+2025-03-27 17:35:34,060 - __main__ - INFO - User initiated AI insights generation
+2025-03-27 17:35:34,126 - __main__ - INFO - Session state initialized
+  Stopping...
